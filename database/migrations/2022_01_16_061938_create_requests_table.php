@@ -18,7 +18,7 @@ class CreateRequestsTable extends Migration
             $table->string('contributor')->nullable()->comment('request by');
             $table->string('artist');
             $table->string('song_title');
-            $table->string('album');
+            $table->string('album')->nullable();
             $table->text('lyrics');
             $table->string('source')->nullable();
             $table->boolean('is_approved')->default(0);
