@@ -20,9 +20,12 @@ type Query {
     requests: [Request] @all
     song(id: ID @eq): Song @find
     songs: [Song!]! @paginate(defaultCount: 10)
-    artists: [Artist!]! @all
+    artists: [Artist!]! @paginate(defaultCount: 10)
     albums: [Album!]! @all
-    getHotArtists: [Artist]
+    artistSong(artist_id: ID! @eq(key: "artist_id")): [Song]! @paginate
+    getHotArtists: [Artist]!
+    getSongLyrics(artist: String!, title: String!): Song!
+    getRandomSong: Song!
 }
 
 type User {

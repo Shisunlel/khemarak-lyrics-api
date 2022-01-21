@@ -13,6 +13,6 @@ class GetHotArtists
      */
     public function __invoke($_, array $args)
     {
-        return Artist::join('songs', 'artists.id', 'artist_id')->groupBy('artists.id')->orderBy(DB::raw('max(songs.created_at)', 'desc'))->take(4)->get(array('name', 'image'));
+        return Artist::join('songs', 'artists.id', 'artist_id')->groupBy('artists.id')->orderBy(DB::raw('max(songs.created_at)', 'desc'))->take(4)->get(array('name', 'image', 'artists.id'));
     }
 }
