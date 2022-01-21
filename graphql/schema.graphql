@@ -2,20 +2,23 @@
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
-scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
-input RequestInput{
-    contributor: String = "Annonymous",
-    artist: String! @rules(apply: ["required", "min:3"]),
-    song_title: String! @rules(apply: ["required", "min:5"]),
-    album: String = null,
-    lyrics: String! @rules(apply: ["required", "min:20"]),
+input RequestInput {
+    contributor: String = "Annonymous"
+    artist: String! @rules(apply: ["required", "min:3"])
+    song_title: String! @rules(apply: ["required", "min:5"])
+    album: String = null
+    source: String
+    lyrics: String! @rules(apply: ["required", "min:20"])
 }
 
 type Query {
     users: [User!]! @paginate(defaultCount: 10)
     user(id: ID @eq): User @find
     requests: [Request] @all
+    song(id: ID @eq): Song @find
     songs: [Song!]! @paginate(defaultCount: 10)
     artists: [Artist!]! @all
     albums: [Album!]! @all
@@ -37,13 +40,10 @@ type Request {
     song_title: String!
     album: String
     lyrics: String!
-    is_approved: Int
-    approved_at: DateTime
-    created_at: DateTime!
-    updated_at: DateTime!
+    source: String
 }
 
-type Artist{
+type Artist {
     id: ID!
     name: String!
     image: String!
@@ -51,7 +51,7 @@ type Artist{
     songs: [Song!] @hasMany
 }
 
-type Album{
+type Album {
     id: ID!
     artist: Artist @belongsTo
     name: String!
@@ -59,7 +59,7 @@ type Album{
     songs: [Song] @hasMany
 }
 
-type Song{
+type Song {
     id: ID!
     artist: Artist! @belongsTo
     album: Album @belongsTo
@@ -70,6 +70,14 @@ type Song{
     lyrics: String!
 }
 
-type Mutation{
+type Mutation {
     createRequest(input: RequestInput! @spread): Request @create
+    storeRequest(
+        contributor: String = "Annonymous"
+        artist: String!
+        song_title: String!
+        album: String
+        lyrics: String!
+        source: String
+    ): Request @create
 }
