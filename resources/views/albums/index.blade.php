@@ -22,15 +22,22 @@
                             <h2>Title</h2>
                             <h2>Artist</h2>
                             <h2>Cover</h2>
+                            <h2>Action</h2>
                         </div>
-                        
+
                         <div class="body mt-6">
                             @forelse ($albums as $album)
                                 <div class="flex justify-between p-2">
-                                    <p>{{ $loop->index + 1 }}</p>
+                                    <p>{{ $album->id }}</p>
                                     <p>{{ $album->name }}</p>
                                     <p>{{ $album->artist->name }}</p>
                                     <img src="{{ $album->cover ?: $album->artist->image }}" class="h-20">
+                                    <p>
+                                        <button
+                                            class="edit-button bg-yellow-400 hover:bg-yellow-600 rounded p-2 mb-2">Edit</button>
+                                        <button
+                                            class="remove-button bg-rose-500 hover:bg-rose-600 rounded p-2">Remove</button>
+                                    </p>
                                 </div>
                             @empty
                                 <p>No data available</p>
@@ -43,4 +50,68 @@
             </div>
         </div>
     </div>
+
+    <x-modal>
+        <x-slot name="title">Edit Album</x-slot>
+        <form id="update" method="POST" enctype="multipart/form-data">
+            @method('PUT')
+            @csrf
+            
+            <div class="mt-2">
+                <x-label for="album">Album Cover</x-label>
+                <input type="text" name="cover" id="cover" class="py-2 px-1 mt-2 w-full">
+            </div>
+        </form>
+        <x-slot name="button">
+            <x-button id="final-approved" form="update"
+                class="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500 ml-2">
+                Approve
+            </x-button>
+            <x-button type="button"
+                class="hide-button">
+                Cancel
+            </x-button>
+        </x-slot>
+    </x-modal>
+
+    @push('script')
+        <script>
+            const modal = document.getElementById('modal')
+            const approvedButton = document.getElementsByClassName('edit-button')
+            const hide = document.getElementsByClassName('hide-button')
+
+            Array.from(approvedButton).forEach(element => {
+                element.addEventListener('click', function() {
+                    const child = this.parentElement.parentElement.children;
+                    populateForm(child)
+                    modal.classList.remove('hidden')
+                })
+            });
+
+
+            Array.from(hide).forEach(element => {
+                element.addEventListener('click', () => {
+                    modal.classList.add('hidden')
+                })
+            });
+
+            const resetText = function(e) {
+                for (let i of e) {
+                    i.value = ''
+                }
+            }
+
+            function populateForm(child) {
+                const form = document.querySelector('#update')
+                const token = document.querySelector('input[name="_token"]')
+                const album = document.querySelector('input[name="cover"]')
+                const id = child[0].innerText
+
+                resetText([album])
+
+                form.action = `albums/${id}`;
+                token.value = '{{ csrf_token() }}'
+            }
+        </script>
+    @endpush
 </x-app-layout>

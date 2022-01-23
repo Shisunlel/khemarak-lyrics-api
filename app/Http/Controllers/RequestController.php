@@ -17,7 +17,7 @@ class RequestController extends Controller
      */
     public function index()
     {
-        $requests = SongRequest::latest()->get();
+        $requests = SongRequest::notApproved()->latest()->get();
         return view($this->indexView, compact('requests'));
     }
 

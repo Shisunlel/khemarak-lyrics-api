@@ -13,6 +13,9 @@ class StoreSongRequest extends FormRequest
      */
     public function authorize()
     {
+        if(auth()->user()->is_admin){
+            return true;
+        }
         return false;
     }
 
@@ -24,7 +27,8 @@ class StoreSongRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'required',
+            'lyrics' => 'required'
         ];
     }
 }

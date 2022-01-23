@@ -13,6 +13,9 @@ class UpdateAlbumRequest extends FormRequest
      */
     public function authorize()
     {
+        if(auth()->user()->is_admin){
+            return true;
+        }
         return false;
     }
 
@@ -24,7 +27,7 @@ class UpdateAlbumRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'cover' => 'sometimes'
         ];
     }
 }

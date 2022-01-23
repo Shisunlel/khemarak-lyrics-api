@@ -72,7 +72,25 @@ class AlbumController extends Controller
      */
     public function update(UpdateAlbumRequest $request, Album $album)
     {
-        //
+        if(!isset($request->cover)){
+            return back();
+        }
+
+        $compressedImage = cloudinary()->upload($request->cover, [
+            'folder' => 'image',
+            'transformation' => [
+                'width' => 500,
+                'height' => 500,
+                'crop' => 'limit',
+                'quality' => 'auto',
+                'fetch_format' => 'auto'
+            ]
+        ])->getSecurePath();
+
+        $album->cover = $compressedImage;
+        $album->save();
+
+        return redirect()->route('albums.index');
     }
 
     /**

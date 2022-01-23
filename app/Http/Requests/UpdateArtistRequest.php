@@ -13,7 +13,7 @@ class UpdateArtistRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return auth()->user()->is_admin ? true : false;
     }
 
     /**
@@ -24,7 +24,7 @@ class UpdateArtistRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'image' => 'required'
         ];
     }
 }

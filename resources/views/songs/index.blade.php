@@ -17,36 +17,160 @@
                         </a>
                     </div>
                     <div class="content">
-                        <div class="header flex justify-between">
-                            <h2>#</h2>
-                            <h2>Title</h2>
-                            <h2>Artist</h2>
-                            <h2>Album</h2>
-                            <h2>Cover</h2>
-                            <h2>Length</h2>
-                            <h2>Lyrics</h2>
-                        </div>
-                        
-                        <div class="body mt-6">
-                            @forelse ($songs as $song)
-                                <div class="flex justify-between p-2">
-                                    <p>{{ $loop->index + 1 }}</p>
-                                    <p>{{ $song->title }}</p>
-                                    <p>{{ $song->artist->name }}</p>
-                                    <p>{{ $song->album->name }}</p>
-                                    <img src="{{ $song->album->cover ?: $song->artist->image }}" class="h-20">
-                                    <p>{{ $song->length }}</p>
-                                    <p>{{ $song->lyrics }}</p>
-                                </div>
-                            @empty
-                                <p>No data available</p>
-                            @endforelse
-
-
+                        <div class="shadow-sm overflow-scroll my-8">
+                            <table class="border-collapse table-auto w-full text-sm">
+                                <thead class="bg-white dark:bg-slate-800">
+                                    <tr>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            #</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Title</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Artist</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Album</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Cover</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Length</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Lyrics</th>
+                                        <th
+                                            class="border-b dark:border-slate-600 font-medium p-4 pr-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-slate-800">
+                                    @forelse ($songs as $song)
+                                        <tr>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                                                {{ $song->id }}</td>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">
+                                                {{ $song->title }}</td>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-slate-500 dark:text-slate-400">
+                                                {{ $song->artist->name }}</td>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-slate-500 dark:text-slate-400">
+                                                {{ isset($song->album) ? $song->album->name : '' }}</td>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-slate-500 dark:text-slate-400">
+                                                <img src="{{ isset($song->album) ? $song->album->cover ?: $song->artist->image ?: '' : '' }}" class="h-20">
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-emerald-500 text-ellipsis overflow-hidden">
+                                                {{ $song->length }}</td>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-slate-500 dark:text-slate-400">
+                                                {{ $song->lyrics }}</td>
+                                            <td
+                                                class="border-b border-slate-100 dark:border-slate-700 p-4 pr-8 text-slate-50 dark:text-black">
+                                                <button
+                                                    class="edit-button bg-yellow-400 hover:bg-yellow-600 rounded p-2 mb-2">Edit</button>
+                                                <button
+                                                    class="remove-button bg-rose-500 hover:bg-rose-600 rounded p-2">Remove</button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <p>No data available</p>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <x-modal>
+        <x-slot name="title">Edit Song</x-slot>
+        <form id="update" method="POST" enctype="multipart/form-data">
+            @method('PUT')
+            @csrf
+            <div class="mt-2">
+                <x-label for="title">Title</x-label>
+                <input type="text" name="title" id="title" class="py-2 px-1 mt-2 w-full">
+            </div>
+            <div class="mt-2">
+                <x-label for="artist">Artist</x-label>
+                <input type="text" name="artist" id="artist" class="py-2 px-1 mt-2 w-full">
+            </div>
+            <div class="mt-2">
+                <x-label for="album">Album</x-label>
+                <input type="text" name="album" id="album" class="py-2 px-1 mt-2 w-full">
+            </div>
+            <div class="mt-2">
+                <x-label for="lyrics">Lyrics</x-label>
+                <textarea name="lyrics" id="lyrics" rows="10" cols="30" class="py-2 px-1 mt-2 w-full"></textarea>
+            </div>
+        </form>
+        <x-slot name="button">
+            <x-button id="final-approved" form="update"
+                class="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500 ml-2">
+                Approve
+            </x-button>
+            <x-button type="button"
+                class="hide-button">
+                Cancel
+            </x-button>
+        </x-slot>
+    </x-modal>
+
+    @push('script')
+        <script>
+            const modal = document.getElementById('modal')
+            const approvedButton = document.getElementsByClassName('edit-button')
+            const hide = document.getElementsByClassName('hide-button')
+
+            Array.from(approvedButton).forEach(element => {
+                element.addEventListener('click', function() {
+                    const child = this.parentElement.parentElement.children;
+                    populateForm(child)
+                    // child[1] title child[2] artist child[3] album child[4] cover child[6] lyrics
+                    modal.classList.remove('hidden')
+                })
+            });
+
+
+            Array.from(hide).forEach(element => {
+                element.addEventListener('click', () => {
+                    modal.classList.add('hidden')
+                })
+            });
+
+            const resetText = function(e) {
+                for (let i of e) {
+                    i.value = ''
+                }
+            }
+
+            function populateForm(child) {
+                const form = document.querySelector('#update')
+                const token = document.querySelector('input[name="_token"]')
+                const title = document.querySelector('input[name="title"]')
+                const artst = document.querySelector('input[name="artist"]')
+                const album = document.querySelector('input[name="album"]')
+                const lyrics = document.querySelector('textarea[name="lyrics"]')
+                const id = child[0].innerText
+
+                resetText([title, artist, album, lyrics])
+
+                form.action = `songs/${id}`;
+                token.value = '{{ csrf_token() }}'
+                title.value = child[1].innerText
+                artist.value = child[2].innerText
+                album.value = child[3].innerText
+                lyrics.value = child[6].innerHTML
+            }
+        </script>
+    @endpush
 </x-app-layout>

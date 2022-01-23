@@ -9,7 +9,7 @@ class Song extends Model
 {
     use HasFactory;
 
-    protected $guard = ['id'];
+    protected $guarded = ['id'];
 
     public function artist()
     {
@@ -24,5 +24,9 @@ class Song extends Model
     public function interactions()
     {
         return $this->hasMany(Interaction::class);
+    }
+
+    public function requests(){
+        return $this->belongsToMany(Request::class);
     }
 }

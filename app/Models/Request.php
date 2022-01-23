@@ -9,6 +9,14 @@ class Request extends Model
 {
     use HasFactory;
 
-    protected $guard = ['id'];
+    protected $guarded = ['id'];
+
+    public function songs(){
+        return $this->belongsToMany(Song::class);
+    }
+
+    public function scopeNotApproved($query){
+        return $query->where('is_approved', 0);
+    }
 
 }

@@ -16,7 +16,7 @@ class CreateArtistsTable extends Migration
         Schema::create('artists', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('image')->nullable();
+            $table->string('image')->nullable()->default('https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg');
             $table->timestamps();
         });
     }
