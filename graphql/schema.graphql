@@ -26,6 +26,8 @@ type Query {
     getHotArtists: [Artist]!
     getSongLyrics(artist: String!, title: String!): Song!
     getRandomSong: Song!
+    searchSong(title: String!): [Song!]!
+    searchArtist(name: String!): [Artist!]!
 }
 
 type User {

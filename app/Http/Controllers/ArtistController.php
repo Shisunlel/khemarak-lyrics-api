@@ -80,8 +80,8 @@ class ArtistController extends Controller
         $compressedImage = cloudinary()->upload($request->image, [
             'folder' => 'image',
             'transformation' => [
-                'width' => 500,
-                'height' => 500,
+                'width' => 1920,
+                'height' => 1080,
                 'crop' => 'limit',
                 'quality' => 'auto',
                 'fetch_format' => 'auto'
