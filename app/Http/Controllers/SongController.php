@@ -49,6 +49,7 @@ class SongController extends Controller
         if (!isset($artist)) {
             $newArtist = Artist::create([
                 'name' => $request->artist,
+                'parse_name' => strtolower(str_replace(' ', '-', $request->artist)),
                 'image' => 'https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg'
             ]);
         }
@@ -95,6 +96,7 @@ class SongController extends Controller
             'artist_id' => isset($newArtist) ? $newArtist->id : $artist->id,
             'album_id' => isset($album) ? $album->id : null,
             'title' => $request->title,
+            'parse_title' => strtolower(str_replace(' ', '-', $request->title)), 
             'length' => $request->length ?? null,
             'track' => $request->track ?? null,
             'disc' => $request->disc ?? null,

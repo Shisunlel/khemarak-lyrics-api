@@ -51,6 +51,7 @@ type Request {
 type Artist {
     id: ID!
     name: String!
+    parse_name: String
     image: String
     albums: [Album!] @hasMany
     songs: [Song!] @hasMany
@@ -69,6 +70,7 @@ type Song {
     artist: Artist! @belongsTo
     album: Album @belongsTo
     title: String!
+    parse_title: String
     length: Int
     track: Int
     disc: Int

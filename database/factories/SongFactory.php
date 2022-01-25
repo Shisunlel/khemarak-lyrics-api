@@ -17,6 +17,7 @@ class SongFactory extends Factory
             'artist_id' => $this->faker->numberBetween(1, 5),
             'album_id' => $this->faker->numberBetween(1, 10),
             'title' => $this->faker->sentence(),
+            'parse_title' => strtolower(str_replace(' ', '-', $this->faker->sentence())),
             'length' => $this->faker->numberBetween(10000, 30000),
             'track' => $this->faker->randomDigit(),
             'disc' => $this->faker->randomDigit(),

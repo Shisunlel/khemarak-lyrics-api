@@ -15,6 +15,7 @@ class ArtistFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
+            'parse_name' => strtolower(str_replace(' ', '-', $this->faker->name())),
             'image' => $this->faker->imageUrl(300, 300, 'person'),
         ];
     }

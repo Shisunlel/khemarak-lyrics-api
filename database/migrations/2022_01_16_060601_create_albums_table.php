@@ -17,7 +17,7 @@ class CreateAlbumsTable extends Migration
             $table->id();
             $table->foreignId('artist_id')->constrained();
             $table->string('name');
-            $table->text('cover')->nullable()->default('https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg')->comment('album cover');
+            $table->text('cover')->nullable()->comment('album cover');
             $table->timestamps();
         });
     }
