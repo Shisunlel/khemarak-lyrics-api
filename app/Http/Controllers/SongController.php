@@ -43,6 +43,7 @@ class SongController extends Controller
     public function store(StoreSongRequest $request)
     {
         $newArtist = null;
+        $album = null;
         // create new artist if not exist
         $artist = Artist::whereRaw('LOWER(name) LIKE ? ', [trim(strtolower($request->artist)) . '%'])->first();
         if (!isset($artist)) {
