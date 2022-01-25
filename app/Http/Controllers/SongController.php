@@ -76,7 +76,7 @@ class SongController extends Controller
         $song = $this->createSong($newArtist, $artist, $album, $request);
 
         // insert into pivot table with request_id and song_id
-        RequestSong::create([
+        RequestSong::insert([
             'request_id' => $request->request_id,
             'song_id' => $song->id
         ]);
