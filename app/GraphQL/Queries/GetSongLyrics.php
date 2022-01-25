@@ -14,6 +14,7 @@ class GetSongLyrics
     {
         $artist = ucwords(str_replace('-', ' ', $args['artist']), " (");
         $title = ucfirst(str_replace('-', ' ', $args['title']));
+        dd($artist);
         return Song::whereHas('artist', function($query) use ($artist){
             return $query->where('name', $artist);
         })->where('title', $title)->first();
