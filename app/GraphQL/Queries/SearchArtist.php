@@ -17,6 +17,6 @@ class SearchArtist
             $lower = strtolower($args['name']);
             return Artist::where(DB::raw('lower(name)'), 'like', "%{$lower}%")->take(5)->get();
         }
-        return [];
+        return Artist::orderBy('id', 'desc')->take(5)->get();
     }
 }

@@ -17,6 +17,6 @@ class SearchSong
             $lower = strtolower($args['title']);
             return Song::where(DB::raw('lower(title)'), 'like', "%{$lower}%")->take(5)->get();
         }
-        return [];
+        return Song::orderBy('id', 'desc')->take(5)->get();
     }
 }
