@@ -13,6 +13,7 @@ class GetRandomSong
      */
     public function __invoke($_, array $args)
     {
-        return Song::orderBy(DB::raw('RAND()'))->first();
+        // rand() - mysql, random() - pgsql
+        return Song::orderBy(DB::raw('RANDOM()'))->first(); 
     }
 }
