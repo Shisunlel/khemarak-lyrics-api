@@ -135,16 +135,28 @@ class SongController extends Controller
      */
     public function update(UpdateSongRequest $request, Song $song)
     {
-        $compressedImage = cloudinary()->upload($request->file('cover')->getRealPath(), [
-            'folder' => 'image',
-            'transformation' => [
-                'width' => 500,
-                'height' => 500,
-                'crop' => 'limit',
-                'quality' => 'auto',
-                'fetch_format' => 'auto'
-            ]
-        ])->getSecurePath();
+        try {
+            $song->artist()->update([
+                'name' => $request->artist,
+                'parse_name' => strtolower(str_replace(' ', '-', $request->artist))
+            ]);
+    
+            if($song->album()){
+                $song->album()->update([
+                    'name' => $request->album
+                ]);
+            }
+    
+            $song->update([
+                'title' => $request->title,
+                'parse_title' => strtolower(str_replace(' ', '-', $request->title)),
+                'lyrics' => $request->lyrics,
+            ]);
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+
+        return redirect()->route('songs.index');
     }
 
     /**
