@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <x-modal :modal="'moda'">
+    <x-modal :modal="'modal'">
         <x-slot name="title">Edit Artist</x-slot>
         <form id="update" method="POST" enctype="multipart/form-data">
             @method('PUT')
