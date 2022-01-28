@@ -64,3 +64,10 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Requirement
+
+- Cloudinary to store image
+- After registration, change is_admin to true in the database to access dashboard
+- Don't forget to run ``` npm run watch ``` when using tailwind

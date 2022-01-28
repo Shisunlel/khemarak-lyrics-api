@@ -94,7 +94,8 @@
         </div>
     </div>
 
-    <x-modal>
+    {{--  accept request --}}
+    <x-modal :modal="'modal'">
         <x-slot name="title">Accept Request</x-slot>
         <form id="store" action="{{ route('songs.store') }}" method="POST">
             @csrf
@@ -127,10 +128,35 @@
             </x-button>
         </x-slot>
     </x-modal>
+
+    {{-- reject request --}}
+    <x-modal :modal="'reject-modal'">
+        <x-slot name="title">Reject Request</x-slot>
+        <form id="delete" method="POST">
+            @method('DELETE')
+            @csrf
+            <p class="text-sm text-gray-500">
+                Are you sure you want to reject this request? This request will be permanently removed. This action cannot be undone.
+            </p>
+        </form>
+        <x-slot name="button">
+            <x-button id="confirm-reject" form="delete"
+                class="bg-rose-600 hover:bg-rose-700 focus:ring-rose-500 ml-2">
+                Reject
+            </x-button>
+            <x-button type="button"
+                class="hide-button">
+                Cancel
+            </x-button>
+        </x-slot>
+    </x-modal>
+
     @push('script')
         <script>
             const modal = document.getElementById('modal')
+            const rejectModal = document.getElementById('reject-modal')
             const approvedButton = document.getElementsByClassName('accept-button')
+            const rejectButton = document.getElementsByClassName('reject-button')
             const hide = document.getElementsByClassName('hide-button')
 
             Array.from(approvedButton).forEach(element => {
@@ -142,10 +168,23 @@
                 })
             });
 
+            Array.from(rejectButton).forEach(e => {
+                e.addEventListener('click', function () { 
+                    const child = this.parentElement.parentElement.children
+                    const id = child[0].innerText
+                    const form = document.querySelector('#delete')
+                    const token = document.querySelector('input[name="_token"]')
+                    form.action = `requests/${id}`
+                    token.value = '{{ csrf_token() }}'
+                    rejectModal.classList.remove('hidden')
+                 })
+            })
+
 
             Array.from(hide).forEach(element => {
                 element.addEventListener('click', () => {
                     modal.classList.add('hidden')
+                    rejectModal.classList.add('hidden')
                 })
             });
 

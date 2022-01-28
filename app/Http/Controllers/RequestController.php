@@ -84,6 +84,7 @@ class RequestController extends Controller
      */
     public function destroy(SongRequest $request)
     {
-        //
+        $request->delete($request->id);
+        return redirect()->route('requests.index');
     }
 }
