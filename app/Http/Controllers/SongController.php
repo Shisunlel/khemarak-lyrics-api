@@ -42,50 +42,59 @@ class SongController extends Controller
      */
     public function store(StoreSongRequest $request)
     {
-        $newArtist = null;
-        $album = null;
-        // create new artist if not exist
-        $artist = Artist::whereRaw('LOWER(name) LIKE ? ', [trim(strtolower($request->artist)) . '%'])->first();
-        if (!isset($artist)) {
-            $newArtist = Artist::create([
-                'name' => $request->artist,
-                'parse_name' => strtolower(str_replace(' ', '-', $request->artist)),
-                'image' => 'https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg'
-            ]);
-        }
-        // create if not exist and provided
-        if (isset($request->album)) {
-            // create new album if new artist
-            if (isset($newArtist)) {
-                $album = Album::create([
-                    'artist_id' => $newArtist->id,
-                    'name' => $request->album,
-                    'cover' => 'https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg'
+        \DB::beginTransaction();
+        try {
+            $newArtist = null;
+            $album = null;
+            // create new artist if not exist
+            $artist = Artist::whereRaw('LOWER(name) LIKE ? ', [trim(strtolower($request->artist)) . '%'])->first();
+            if (!isset($artist)) {
+                $newArtist = Artist::create([
+                    'name' => $request->artist,
+                    'parse_name' => strtolower(str_replace(' ', '-', $request->artist)),
+                    'image' => 'https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg'
                 ]);
-            } else {
-                $album = Album::whereRaw('LOWER(name) LIKE ? ', [trim(strtolower($request->album)) . '%'])->where('artist_id', $artist->id)->first();
-                if (!isset($album)) {
+            }
+            // create if not exist and provided
+            if (isset($request->album)) {
+                // create new album if new artist
+                if (isset($newArtist)) {
                     $album = Album::create([
-                        'artist_id' => $artist->id,
+                        'artist_id' => $newArtist->id,
                         'name' => $request->album,
                         'cover' => 'https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg'
                     ]);
+                } else {
+                    $album = Album::whereRaw('LOWER(name) LIKE ? ', [trim(strtolower($request->album)) . '%'])->where('artist_id', $artist->id)->first();
+                    if (!isset($album)) {
+                        $album = Album::create([
+                            'artist_id' => $artist->id,
+                            'name' => $request->album,
+                            'cover' => 'https://res.cloudinary.com/shisun/image/upload/v1642926881/image/no-profile.jpg'
+                        ]);
+                    }
                 }
             }
+            // create new song
+            $song = $this->createSong($newArtist, $artist, $album, $request);
+
+            // insert into pivot table with request_id and song_id
+            RequestSong::insert([
+                'request_id' => $request->request_id,
+                'song_id' => $song->id
+            ]);
+
+            Request::where('id', $request->request_id)->update([
+                'is_approved' => 1,
+                'approved_at' => now()
+            ]);
+
+            \DB::commit();
+        } catch (\Exception $ex) {
+            \DB::rollback();
+            dd($ex->getMessage());
         }
-        // create new song
-        $song = $this->createSong($newArtist, $artist, $album, $request);
 
-        // insert into pivot table with request_id and song_id
-        RequestSong::insert([
-            'request_id' => $request->request_id,
-            'song_id' => $song->id
-        ]);
-
-        Request::where('id', $request->request_id)->update([
-            'is_approved' => 1,
-            'approved_at' => now()
-        ]);
 
         return redirect()->route('songs.index');
     }
@@ -96,7 +105,7 @@ class SongController extends Controller
             'artist_id' => isset($newArtist) ? $newArtist->id : $artist->id,
             'album_id' => isset($album) ? $album->id : null,
             'title' => $request->title,
-            'parse_title' => strtolower(str_replace(' ', '-', $request->title)), 
+            'parse_title' => strtolower(str_replace(' ', '-', $request->title)),
             'length' => $request->length ?? null,
             'track' => $request->track ?? null,
             'disc' => $request->disc ?? null,
@@ -135,25 +144,28 @@ class SongController extends Controller
      */
     public function update(UpdateSongRequest $request, Song $song)
     {
+        \DB::beginTransaction();
         try {
             $song->artist()->update([
                 'name' => $request->artist,
                 'parse_name' => strtolower(str_replace(' ', '-', $request->artist))
             ]);
-    
-            if($song->album()){
+
+            if ($song->album()) {
                 $song->album()->update([
                     'name' => $request->album
                 ]);
             }
-    
+
             $song->update([
                 'title' => $request->title,
                 'parse_title' => strtolower(str_replace(' ', '-', $request->title)),
                 'lyrics' => $request->lyrics,
             ]);
-        } catch (\Throwable $th) {
-            dd($th);
+            \DB::commit();
+        } catch (\Exception $ex) {
+            \DB::rollback();
+            dd($ex->getMessage());
         }
 
         return redirect()->route('songs.index');

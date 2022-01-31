@@ -73,23 +73,27 @@ class ArtistController extends Controller
      */
     public function update(UpdateArtistRequest $request, Artist $artist)
     {
-        if(!isset($request->image)){
+        if (!isset($request->image)) {
             return back();
         }
 
-        $compressedImage = cloudinary()->upload($request->image, [
-            'folder' => 'image',
-            'transformation' => [
-                'width' => 1920,
-                'height' => 1080,
-                'crop' => 'limit',
-                'quality' => 'auto',
-                'fetch_format' => 'auto'
-            ]
-        ])->getSecurePath();
+        try {
+            $compressedImage = cloudinary()->upload($request->image, [
+                'folder' => 'image',
+                'transformation' => [
+                    'width' => 1920,
+                    'height' => 1080,
+                    'crop' => 'limit',
+                    'quality' => 'auto',
+                    'fetch_format' => 'auto'
+                ]
+            ])->getSecurePath();
 
-        $artist->image = $compressedImage;
-        $artist->save();
+            $artist->image = $compressedImage;
+            $artist->save();
+        } catch (\Exception $ex) {
+            dd($ex->getMessage());
+        }
 
         return redirect()->route('artists.index');
     }
