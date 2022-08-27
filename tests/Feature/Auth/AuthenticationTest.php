@@ -18,17 +18,16 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen()
+    public function test_users_can_not_authenticate_without_admin()
     {
         $user = User::factory()->create();
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'name' => $user->name,
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        $response->assertForbidden();
     }
 
     public function test_users_can_not_authenticate_with_invalid_password()
@@ -36,10 +35,26 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email' => $user->email,
+            'name' => $user->name,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+    }
+
+    public function test_users_can_authenticate_when_login_as_admin(){
+        $user = User::factory()->create([
+            'is_admin' => 1
+        ]);
+
+        $response = $this->post('/login', [
+            'name' => $user->name,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+
+        $response->assertRedirect(RouteServiceProvider::HOME);
+
     }
 }

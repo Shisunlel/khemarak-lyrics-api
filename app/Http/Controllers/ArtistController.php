@@ -78,18 +78,7 @@ class ArtistController extends Controller
         }
 
         try {
-            $compressedImage = cloudinary()->upload($request->image, [
-                'folder' => 'image',
-                'transformation' => [
-                    'width' => 1920,
-                    'height' => 1080,
-                    'crop' => 'limit',
-                    'quality' => 'auto',
-                    'fetch_format' => 'auto'
-                ]
-            ])->getSecurePath();
-
-            $artist->image = $compressedImage;
+            $artist->image = upload_image_to_cloud($request->image, 1920, 1080);
             $artist->save();
         } catch (\Exception $ex) {
             dd($ex->getMessage());

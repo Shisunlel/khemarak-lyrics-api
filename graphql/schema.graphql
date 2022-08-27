@@ -69,6 +69,7 @@ type Song {
     id: ID!
     artist: Artist! @belongsTo
     album: Album @belongsTo
+    request: [Request]! @belongsToMany(relation: "requests")
     title: String!
     parse_title: String
     length: Int

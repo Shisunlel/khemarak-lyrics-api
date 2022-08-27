@@ -77,18 +77,7 @@ class AlbumController extends Controller
         }
 
         try {
-            $compressedImage = cloudinary()->upload($request->cover, [
-                'folder' => 'image',
-                'transformation' => [
-                    'width' => 500,
-                    'height' => 500,
-                    'crop' => 'limit',
-                    'quality' => 'auto',
-                    'fetch_format' => 'auto'
-                ]
-            ])->getSecurePath();
-
-            $album->cover = $compressedImage;
+            $album->cover = upload_image_to_cloud($request->cover, 500, 500);
             $album->save();
         } catch (\Exception $ex) {
             dd($ex->getMessage());
